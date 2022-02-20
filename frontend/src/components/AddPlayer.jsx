@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import Axios from 'axios'
 import './common.css'
 import {useNavigate} from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useEffect } from 'react'
 
 const useStyle = makeStyles({
   container :{
@@ -34,6 +36,19 @@ const AddPlayer = () => {
   const {jourseyNo,playerName, totalRuns,highestScore, fours, sixes} = players
 
   const negivate = useNavigate()
+  const {id} = useParams()
+  console.log(id);
+
+  useEffect(()=>{
+    if(id){
+      Axios.get(`http://localhost:5000/icc/player/${id}`)
+      .then(response=>{
+        console.log(response);
+        const {jourseyNo,playerName, totalRuns,highestScore, fours, sixes} = response.data
+        setPlayers({jourseyNo,playerName, totalRuns,highestScore, fours, sixes})
+      })
+    }
+  },[])
 
   const handleChange = (e)=>{
     setPlayers({...players, [e.target.name] : e.target.value})
@@ -42,13 +57,22 @@ const AddPlayer = () => {
   const handleSubmit = (e)=>{
     e.preventDefault()
 
-    Axios.post('http://localhost:5000/icc/register', players)
-    .then(response=>{
-    console.log(response);
-    negivate('/allplayers')
-
+    if(id){
+      Axios.put(`http://localhost:5000/icc/update/${id}`, players)
+      .then(response=>{
+        // console.log(response);
+        const {jourseyNo,playerName, totalRuns,highestScore, fours, sixes} = response.data
+        setPlayers({jourseyNo,playerName, totalRuns,highestScore, fours, sixes})
+        negivate('/allplayers')
+      })
+    } else{
+      Axios.post('http://localhost:5000/icc/register', players)
+      .then(response=>{
+      // console.log(response);
+      negivate('/allplayers')
   })
   }
+}
 
   
 

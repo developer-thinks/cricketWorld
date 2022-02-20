@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const PlayerSchema = new mongoose.Schema({
     jourseyNo : {
         type : Number,
-        required : true
+        required : true,
+        unique : true
     },
     playerName :{
         type : String,
